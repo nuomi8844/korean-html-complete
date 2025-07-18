@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩式个人链接页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #fecaca 0%, #fde7f3 50%, #fecaca 100%);
+            min-height: 100vh;
+            padding: 16px 0;
+            overflow-x: hidden;
+        }
+
+        /* 主容器 - 384px宽度 */
+        .container {
+            max-width: 384px;
+            margin: 0 auto;
+            padding: 0 16px;
+            position: relative;
+        }
+
+        /* 自定义动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+        .animate-bounce-gentle { animation: bounceGentle 2s ease-in-out infinite; }
+
+        /* 延迟动画 */
+        .delay-300 { animation-delay: 300ms; }
+        .delay-500 { animation-delay: 500ms; }
+        .delay-700 { animation-delay: 700ms; }
+        .delay-1000 { animation-delay: 1000ms; }
+
+        /* 卡片悬停效果 */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* 主卡片区域 */
+        .main-card {
+            background: rgba(251, 207, 232, 0.8);
+            border: 1px solid #fbb6ce;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin-bottom: 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 顶部大图区域 - 192px高度 */
+        .hero-image-area {
+            width: 100%;
+            height: 192px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 16px;
+        }
+
+        .hero-text {
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 30px;
+            line-height: 36px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .bounce-letter {
+            color: #fb923c;
+            animation: bounceGentle 2s ease-in-out infinite;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            line-height: 20px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            white-space: pre-line; /* 保持换行格式 */
+            text-align: center;
+        }
+
+        .hero-description {
+            font-size: 12px;
+            line-height: 16px;
+            opacity: 0.8;
+            white-space: pre-line; /* 保持换行格式 */
+            text-align: center;
+        }
+
+        /* 底部小图网格 - 3列128px高度 */
+        .gallery-grid-small {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            height: 128px;
+        }
+
+        .gallery-item-small {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item-small:hover {
+            transform: scale(1.1);
+        }
+
+        .gallery-image-small {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-overlay-small {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item-small:hover .gallery-overlay-small {
+            opacity: 1;
+        }
+
+        /* 底部文字叠加 */
+        .bottom-text-overlay {
+            position: absolute;
+            bottom: 32px;
+            left: 0; right: 0;
+            text-align: center;
+            color: white;
+        }
+
+        .bottom-text-1 {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .bottom-text-2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #93c5fd;
+        }
+
+        /* 文字介绍区域 */
+        .text-section {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #fecaca;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .section-content {
+            font-size: 14px;
+            line-height: 20px;
+            color: #4b5563;
+            white-space: pre-line; /* 保持换行格式 */
+            text-align: center;
+        }
+
+        .section-divider {
+            width: 64px;
+            height: 4px;
+            border-radius: 9999px;
+            margin: 16px auto 0;
+            background: linear-gradient(to right, #fca5a5, #fb7185);
+        }
+
+        /* 链接卡片 */
+        .link-card {
+            background: rgba(251, 207, 232, 0.6);
+            border: 1px solid #fbb6ce;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            height: 80px;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .link-image-area {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 16px 0 0 16px;
+            position: relative;
+        }
+
+        .link-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .link-card:hover .link-image {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .link-content {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .link-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .link-description {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .external-icon {
+            width: 16px;
+            height: 16px;
+            color: #6b7280;
+            flex-shrink: 0;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .link-card:hover .external-icon {
+            color: #1f2937;
+            transform: scale(1.1);
+        }
+
+        /* 相册画廊 */
+        .photo-gallery {
+            margin-bottom: 24px;
+        }
+
+        .gallery-title {
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(251, 207, 232, 0.6);
+            border: 1px solid #fbb6ce;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-text {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 16px;
+            color: white;
+            transform: translateY(16px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-text {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .gallery-text-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .gallery-text-description {
+            font-size: 12px;
+            line-height: 16px;
+            opacity: 0.9;
+            white-space: pre-line;
+            text-align: center;
+        }
+
+        .gallery-border {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 2px solid #f472b6;
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-border {
+            opacity: 1;
+        }
+
+        /* 管理按钮（隐藏） */
+        .admin-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            .gallery-grid {
+                gap: 12px;
+            }
+
+            .link-content {
+                padding: 12px;
+            }
+        }
+
+        /* 社交图标样式 */
+        .social-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .social-icon.telegram {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300a2e8"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16l-1.58 7.44c-.12.539-.431.67-.874.417l-2.41-1.777-1.165 1.12c-.129.129-.238.238-.489.238l.174-2.471 4.493-4.062c.195-.174-.043-.27-.302-.096l-5.542 3.487-2.388-.747c-.52-.162-.53-.52.108-.77l9.312-3.588c.434-.162.813.096.674.769z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .social-icon.line {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300b900"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6 13.2c0 .3-.3.6-.6.6h-.6v1.8c0 .3-.3.6-.6.6s-.6-.3-.6-.6v-1.8h-.6c-.3 0-.6-.3-.6-.6s.3-.6.6-.6h2.4c.3 0 .6.3.6.6v.6zm-3.6-1.8c0 .3-.3.6-.6.6H12v1.8c0 .3-.3.6-.6.6s-.6-.3-.6-.6v-1.8h-1.8c-.3 0-.6-.3-.6-.6s.3-.6.6-.6h3.6c.3 0 .6.3.6.6z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .social-icon.instagram {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e4405f"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16l-1.58 7.44c-.12.539-.431.67-.874.417l-2.41-1.777-1.165 1.12c-.129.129-.238.238-.489.238l.174-2.471 4.493-4.062c.195-.174-.043-.27-.302-.096l-5.542 3.487-2.388-.747c-.52-.162-.53-.52.108-.77l9.312-3.588c.434-.162.813.096.674.769z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .social-icon.wechat {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2309bb07"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-2.4 8.4c.3 0 .6.3.6.6s-.3.6-.6.6-.6-.3-.6-.6.3-.6.6-.6zm4.8 0c.3 0 .6.3.6.6s-.3.6-.6.6-.6-.3-.6-.6.3-.6.6-.6zm-2.4 6c-2.1 0-3.9-1.2-4.5-2.7.3.3.6.3.9.3 1.8 0 3.3-1.5 3.3-3.3 0-.3 0-.6-.3-.9 2.1-.3 3.9.9 4.2 2.7-.3-.3-.6-.3-.9-.3-1.8 0-3.3 1.5-3.3 3.3 0 .6.3 1.2.6 1.7z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        /* 外部链接图标 */
+        .external-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- 主卡片区域 -->
+        <div class="main-card card-hover animate-fade-in">
+            <!-- 顶部大图区域 (192px高度) -->
+            <div class="hero-image-area" onclick="handleHeroClick()">
+                <img src="https://images.unsplash.com/photo-1524593689594-aae2f26b75ab?w=400&h=200&fit=crop"
+                     alt="主图" class="hero-image" id="heroImage">
+                <div class="hero-overlay">
+                    <div class="hero-text animate-fade-in">
+                        <h1 class="hero-title">
+                            <span class="bounce-letter">B</span>
+                            <span class="animate-slide-up" id="heroTitle">밤의 전쟁</span>
+                        </h1>
+                        <p class="hero-subtitle animate-fade-in delay-300" id="heroSubtitle">最高의 미인들을 온라인에서 만날 수 있는
+특별한 공간입니다</p>
+                        <div class="hero-description animate-fade-in delay-500" id="heroDescription">여기서는 지금까지 상상해보지 못했던
+아름다운 여성들을 만날 수 있습니다
+품격있는 서비스를 제공합니다</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部小图网格 (3列128px高度) -->
+            <div class="gallery-grid-small" id="smallGallery">
+                <!-- 小图将通过JavaScript生成 -->
+            </div>
+
+            <!-- 底部文字叠加 -->
+            <div class="bottom-text-overlay animate-fade-in delay-700">
+                <p class="bottom-text-1" id="bottomText1">코리아 멤버십 특가</p>
+                <p class="bottom-text-2" id="bottomText2">외국인 가입금지</p>
+            </div>
+        </div>
+
+        <!-- 第一文字介绍区域 -->
+        <div class="text-section card-hover animate-fade-in delay-500" id="middleSectionCard">
+            <h2 class="section-title animate-slide-up" id="middleTitle">🌟 专属服务介绍</h2>
+            <p class="section-content animate-fade-in delay-700" id="middleContent">我们提供24小时专业咨询服务
+拥有多年行业经验的团队为您提供最优质的服务
+无论您有任何需求，我们都会第一时间为您解答和处理
+选择我们，就是选择专业、可靠、贴心的服务体验</p>
+            <div class="section-divider animate-fade-in delay-1000"></div>
+        </div>
+
+        <!-- 第一组链接卡片 -->
+        <div class="links-section" id="linksGroup1">
+            <!-- 链接将通过JavaScript生成 -->
+        </div>
+
+        <!-- 第一相册画廊 -->
+        <div class="photo-gallery animate-fade-in delay-500">
+            <h2 class="gallery-title animate-slide-up" id="gallery1Title">📸 精选作品展示</h2>
+            <div class="section-divider animate-fade-in delay-700" style="margin: 8px auto 0;"></div>
+            <div class="gallery-grid" id="gallery1">
+                <!-- 相册图片将通过JavaScript生成 -->
+            </div>
+        </div>
+
+        <!-- 第二文字介绍区域 -->
+        <div class="text-section card-hover animate-fade-in delay-500" id="bottomSectionCard">
+            <h2 class="section-title animate-slide-up" id="bottomTitle">💎 贵宾会员服务</h2>
+            <p class="section-content animate-fade-in delay-700" id="bottomContent">成为我们的贵宾会员
+享受更多独家权益和专属服务
+专业的客服团队随时为您服务
+让您的每一次体验都完美无缺</p>
+            <div class="section-divider animate-fade-in delay-1000" style="background: linear-gradient(to right, #fb7185, #f472b6);"></div>
+        </div>
+
+        <!-- 第二相册画廊 -->
+        <div class="photo-gallery animate-fade-in delay-500">
+            <h2 class="gallery-title animate-slide-up" id="gallery2Title">✨ 更多精彩内容</h2>
+            <div class="section-divider animate-fade-in delay-700" style="margin: 8px auto 0;"></div>
+            <div class="gallery-grid" id="gallery2">
+                <!-- 第二相册图片将通过JavaScript生成 -->
+            </div>
+        </div>
+
+        <!-- 第二组链接卡片 -->
+        <div class="links-section" id="linksGroup2">
+            <!-- 第二组链接将通过JavaScript生成 -->
+        </div>
+
+        <!-- 最终文字介绍区域 -->
+        <div class="text-section card-hover animate-fade-in delay-500" id="finalSectionCard">
+            <h2 class="section-title animate-slide-up" id="finalTitle">🎉 联系我们</h2>
+            <p class="section-content animate-fade-in delay-700" id="finalContent">感谢您访问我们的专属页面
+如有任何问题或需要帮助，欢迎随时联系我们
+我们将竭诚为您提供最优质的服务
+期待与您的美好相遇</p>
+            <div class="section-divider animate-fade-in delay-1000" style="background: linear-gradient(to right, #a855f7, #f472b6);"></div>
+        </div>
+
+        <div style="height: 32px;"></div>
+    </div>
+
+    <!-- 管理按钮（默认隐藏） -->
+    <button class="admin-button" id="adminButton" onclick="showPasswordModal()">⚙️</button>
+
+    <!-- 密码验证模态框 -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h2 class="modal-title">管理员登录</h2>
+            <div class="form-group">
+                <label class="form-label">输入管理密码：</label>
+                <input type="password" class="form-input" id="passwordInput" placeholder="请输入密码">
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="checkPassword()">确认</button>
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2 class="modal-title">内容管理</h2>
+
+            <!-- 主要内容编辑 -->
+            <div class="form-group">
+                <label class="form-label">主标题：</label>
+                <input type="text" class="form-input" id="editHeroTitle">
+            </div>
+            <div class="form-group">
+                <label class="form-label">副标题（支持换行）：</label>
+                <textarea class="form-textarea" id="editHeroSubtitle" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述文字（支持换行）：</label>
+                <textarea class="form-textarea" id="editHeroDescription" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">第一段文字标题：</label>
+                <input type="text" class="form-input" id="editMiddleTitle">
+            </div>
+            <div class="form-group">
+                <label class="form-label">第一段文字内容（支持换行）：</label>
+                <textarea class="form-textarea" id="editMiddleContent" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">第二段文字标题：</label>
+                <input type="text" class="form-input" id="editBottomTitle">
+            </div>
+            <div class="form-group">
+                <label class="form-label">第二段文字内容（支持换行）：</label>
+                <textarea class="form-textarea" id="editBottomContent" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">最终文字标题：</label>
+                <input type="text" class="form-input" id="editFinalTitle">
+            </div>
+            <div class="form-group">
+                <label class="form-label">最终文字内容（支持换行）：</label>
+                <textarea class="form-textarea" id="editFinalContent" rows="4"></textarea>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveChanges()">保存更改</button>
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 网站配置 - 您可以在这里直接修改所有内容
+        const siteConfig = {
+            // 管理员密码
+            adminPassword: "qwe5566@",
+
+            // 主图和文字内容
+            hero: {
+                image: "https://images.unsplash.com/photo-1524593689594-aae2f26b75ab?w=400&h=200&fit=crop",
+                title: "밤의 전쟁",
+                subtitle: "最高의 미인들을 온라인에서 만날 수 있는\n특별한 공간입니다",
+                description: "여기서는 지금까지 상상해보지 못했던\n아름다운 여성들을 만날 수 있습니다\n품격있는 서비스를 제공합니다",
+                clickUrl: "https://line.me/ti/p/您的LINE-ID"
+            },
+
+            // 小图网格（3张图片，点击跳转到LINE）
+            smallGallery: [
+                {
+                    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=150&fit=crop",
+                    clickUrl: "https://line.me/ti/p/您的LINE-ID"
+                },
+                {
+                    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop",
+                    clickUrl: "https://line.me/ti/p/您的LINE-ID"
+                },
+                {
+                    image: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=150&h=150&fit=crop",
+                    clickUrl: "https://line.me/ti/p/您的LINE-ID"
+                }
+            ],
+
+            // 底部文字
+            bottomText: {
+                text1: "코리아 멤버십 특가",
+                text2: "외국인 가입금지"
+            },
+
+            // 文字介绍区域
+            textSections: {
+                middle: {
+                    title: "🌟 专属服务介绍",
+                    content: "我们提供24小时专业咨询服务\n拥有多年行业经验的团队为您提供最优质的服务\n无论您有任何需求，我们都会第一时间为您解答和处理\n选择我们，就是选择专业、可靠、贴心的服务体验"
+                },
+                bottom: {
+                    title: "💎 贵宾会员服务",
+                    content: "成为我们的贵宾会员\n享受更多独家权益和专属服务\n专业的客服团队随时为您服务\n让您的每一次体验都完美无缺"
+                },
+                final: {
+                    title: "🎉 联系我们",
+                    content: "感谢您访问我们的专属页面\n如有任何问题或需要帮助，欢迎随时联系我们\n我们将竭诚为您提供最优质的服务\n期待与您的美好相遇"
+                }
+            },
+
+            // 第一组链接（在第一相册前）
+            linksGroup1: [
+                {
+                    title: "Telegram 联系",
+                    description: "即时聊天，快速响应",
+                    url: "https://t.me/您的用户名",
+                    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=100&h=100&fit=crop",
+                    icon: "telegram"
+                },
+                {
+                    title: "LINE 咨询",
+                    description: "专业客服，贴心服务",
+                    url: "https://line.me/ti/p/您的LINE-ID",
+                    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=100&h=100&fit=crop",
+                    icon: "line"
+                }
+            ],
+
+            // 第二组链接（在第二相册后）
+            linksGroup2: [
+                {
+                    title: "Instagram",
+                    description: "精彩内容，每日更新",
+                    url: "https://instagram.com/您的用户名",
+                    image: "https://images.unsplash.com/photo-1611262588024-d12430b98920?w=100&h=100&fit=crop",
+                    icon: "instagram"
+                },
+                {
+                    title: "微信联系",
+                    description: "添加微信，获取更多信息",
+                    url: "#",
+                    image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=100&h=100&fit=crop",
+                    icon: "wechat"
+                }
+            ],
+
+            // 第一相册（点击跳转到LINE）
+            gallery1: {
+                title: "📸 精选作品展示",
+                clickUrl: "https://line.me/ti/p/您的LINE-ID",
+                images: [
+                    {
+                        src: "https://images.unsplash.com/photo-1524593689594-aae2f26b75ab?w=300&h=400&fit=crop",
+                        title: "精选作品 1",
+                        description: "专业摄影\n高清画质"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop",
+                        title: "精选作品 2",
+                        description: "艺术创作\n唯美风格"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=300&h=400&fit=crop",
+                        title: "精选作品 3",
+                        description: "时尚大片\n品质保证"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1494790108755-2616c2c5e5ec?w=300&h=400&fit=crop",
+                        title: "精选作品 4",
+                        description: "经典作品\n永恒魅力"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=400&fit=crop",
+                        title: "精选作品 5",
+                        description: "独特视角\n创意无限"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=300&h=400&fit=crop",
+                        title: "精选作品 6",
+                        description: "专业水准\n品味之选"
+                    }
+                ]
+            },
+
+            // 第二相册（点击跳转到Telegram）
+            gallery2: {
+                title: "✨ 更多精彩内容",
+                clickUrl: "https://t.me/您的用户名",
+                images: [
+                    {
+                        src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop",
+                        title: "精彩内容 1",
+                        description: "独家内容\n会员专享"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=400&fit=crop",
+                        title: "精彩内容 2",
+                        description: "高端定制\n私人订制"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=300&h=400&fit=crop",
+                        title: "精彩内容 3",
+                        description: "限时更新\n抢先体验"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=400&fit=crop",
+                        title: "精彩内容 4",
+                        description: "VIP特权\n尊享服务"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=300&h=400&fit=crop",
+                        title: "精彩内容 5",
+                        description: "最新发布\n热门推荐"
+                    },
+                    {
+                        src: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=300&h=400&fit=crop",
+                        title: "精彩内容 6",
+                        description: "精品收藏\n珍贵资源"
+                    }
+                ]
+            }
+        };
+
+        // 初始化页面
+        function initializePage() {
+            // 设置主图和文字
+            document.getElementById('heroImage').src = siteConfig.hero.image;
+            document.getElementById('heroTitle').textContent = siteConfig.hero.title;
+            document.getElementById('heroSubtitle').textContent = siteConfig.hero.subtitle;
+            document.getElementById('heroDescription').textContent = siteConfig.hero.description;
+
+            // 设置底部文字
+            document.getElementById('bottomText1').textContent = siteConfig.bottomText.text1;
+            document.getElementById('bottomText2').textContent = siteConfig.bottomText.text2;
+
+            // 设置文字介绍区域
+            document.getElementById('middleTitle').textContent = siteConfig.textSections.middle.title;
+            document.getElementById('middleContent').textContent = siteConfig.textSections.middle.content;
+            document.getElementById('bottomTitle').textContent = siteConfig.textSections.bottom.title;
+            document.getElementById('bottomContent').textContent = siteConfig.textSections.bottom.content;
+            document.getElementById('finalTitle').textContent = siteConfig.textSections.final.title;
+            document.getElementById('finalContent').textContent = siteConfig.textSections.final.content;
+
+            // 设置相册标题
+            document.getElementById('gallery1Title').textContent = siteConfig.gallery1.title;
+            document.getElementById('gallery2Title').textContent = siteConfig.gallery2.title;
+
+            // 生成小图网格
+            generateSmallGallery();
+
+            // 生成链接卡片
+            generateLinks('linksGroup1', siteConfig.linksGroup1);
+            generateLinks('linksGroup2', siteConfig.linksGroup2);
+
+            // 生成相册
+            generateGallery('gallery1', siteConfig.gallery1);
+            generateGallery('gallery2', siteConfig.gallery2);
+        }
+
+        // 生成小图网格
+        function generateSmallGallery() {
+            const container = document.getElementById('smallGallery');
+            container.innerHTML = '';
+
+            siteConfig.smallGallery.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item-small';
+                div.onclick = () => window.open(item.clickUrl, '_blank');
+                div.innerHTML = `
+                    <img src="${item.image}" alt="小图${index + 1}" class="gallery-image-small">
+                    <div class="gallery-overlay-small"></div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 生成链接卡片
+        function generateLinks(containerId, links) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            links.forEach(link => {
+                const a = document.createElement('a');
+                a.className = 'link-card card-hover';
+                a.href = link.url;
+                a.target = '_blank';
+                a.innerHTML = `
+                    <div class="link-image-area">
+                        <img src="${link.image}" alt="${link.title}" class="link-image">
+                    </div>
+                    <div class="link-content">
+                        <div>
+                            <div class="link-title">
+                                <span class="social-icon ${link.icon}"></span>
+                                ${link.title}
+                            </div>
+                            <div class="link-description">${link.description}</div>
+                        </div>
+                        <div class="external-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(a);
+            });
+        }
+
+        // 生成相册
+        function generateGallery(containerId, gallery) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            gallery.images.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.style.animationDelay = `${(index + 1) * 100}ms`;
+                div.onclick = () => window.open(gallery.clickUrl, '_blank');
+                div.innerHTML = `
+                    <img src="${item.src}" alt="${item.title}" class="gallery-image">
+                    <div class="gallery-overlay"></div>
+                    <div class="gallery-text">
+                        <h3 class="gallery-text-title">${item.title}</h3>
+                        <p class="gallery-text-description">${item.description}</p>
+                    </div>
+                    <div class="gallery-border"></div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 主图点击事件
+        function handleHeroClick() {
+            window.open(siteConfig.hero.clickUrl, '_blank');
+        }
+
+        // 显示密码验证模态框
+        function showPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        // 检查密码
+        function checkPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            if (inputPassword === siteConfig.adminPassword) {
+                document.getElementById('passwordModal').style.display = 'none';
+                showEditModal();
+            } else {
+                alert('密码错误！');
+            }
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // 显示编辑模态框
+        function showEditModal() {
+            // 填充当前值到表单
+            document.getElementById('editHeroTitle').value = siteConfig.hero.title;
+            document.getElementById('editHeroSubtitle').value = siteConfig.hero.subtitle;
+            document.getElementById('editHeroDescription').value = siteConfig.hero.description;
+            document.getElementById('editMiddleTitle').value = siteConfig.textSections.middle.title;
+            document.getElementById('editMiddleContent').value = siteConfig.textSections.middle.content;
+            document.getElementById('editBottomTitle').value = siteConfig.textSections.bottom.title;
+            document.getElementById('editBottomContent').value = siteConfig.textSections.bottom.content;
+            document.getElementById('editFinalTitle').value = siteConfig.textSections.final.title;
+            document.getElementById('editFinalContent').value = siteConfig.textSections.final.content;
+
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // 保存更改
+        function saveChanges() {
+            // 更新配置
+            siteConfig.hero.title = document.getElementById('editHeroTitle').value;
+            siteConfig.hero.subtitle = document.getElementById('editHeroSubtitle').value;
+            siteConfig.hero.description = document.getElementById('editHeroDescription').value;
+            siteConfig.textSections.middle.title = document.getElementById('editMiddleTitle').value;
+            siteConfig.textSections.middle.content = document.getElementById('editMiddleContent').value;
+            siteConfig.textSections.bottom.title = document.getElementById('editBottomTitle').value;
+            siteConfig.textSections.bottom.content = document.getElementById('editBottomContent').value;
+            siteConfig.textSections.final.title = document.getElementById('editFinalTitle').value;
+            siteConfig.textSections.final.content = document.getElementById('editFinalContent').value;
+
+            // 重新初始化页面
+            initializePage();
+
+            // 保存到本地存储
+            localStorage.setItem('siteConfig', JSON.stringify(siteConfig));
+
+            closeModal();
+            alert('更改已保存！');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // 键盘快捷键 Ctrl+Shift+A 显示管理按钮
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                document.getElementById('adminButton').style.display = 'block';
+            }
+        });
+
+        // 从本地存储加载配置
+        function loadFromStorage() {
+            const saved = localStorage.getItem('siteConfig');
+            if (saved) {
+                try {
+                    const savedConfig = JSON.parse(saved);
+                    // 合并配置，保留默认值
+                    Object.assign(siteConfig, savedConfig);
+                } catch (e) {
+                    console.log('加载保存的配置失败，使用默认配置');
+                }
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+            initializePage();
+        });
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const passwordModal = document.getElementById('passwordModal');
+            const editModal = document.getElementById('editModal');
+            if (event.target === passwordModal || event.target === editModal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
